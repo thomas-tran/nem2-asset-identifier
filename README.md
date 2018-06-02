@@ -6,6 +6,74 @@
 
 The goal of the library is identify an asset that does not belong to NEM main chain in a deterministic way, like other blockchains assets, private chains, [IPFS][ipfs] and so on.
 
+## Usage
+
+### Creating an asset
+
+```typescript
+import { Asset } from 'nem2-asset-identifier';
+import { NetworkType, PublicAccount } from 'nem2-sdk';
+
+const network = NetworkType.MIJIN_TEST;
+const owner = PublicAccount.createFromPublicKey(
+    '6C516BCD2F92F9C6F60477E7751DB030157CA33FEF1DAB0585C1B002D14896AE',
+    network,
+);
+
+const asset = Asset.create(
+    owner,
+    'otherchain',
+    '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
+    network,
+);
+```
+
+### Publishing an asset
+
+```typescript
+import { Asset, AssetService } from 'nem2-asset-identifier';
+import { Account, NetworkType, PublicAccount, TransactionHttp } from 'nem2-sdk';
+
+// Services and Repositories
+const assertService = new AssertService();
+const transactionHttp = new TransactionHttp('http://localhost:3000');
+
+// Replace with a private key
+const privateKey = process.env.PRIVATE_KEY as string;
+const account = Account.createFromPrivateKey(privateKey, NetworkType.MIJIN_TEST);
+
+const asset = Asset.create(/* ... */); // Previous point
+const publishableAsset = assertService.publish(asset);
+
+// Publishing
+transactionHttp
+    .announce(account.sign(publishableAsset))
+    .subscribe(result => console.log('asset published'));
+```
+
+### Receiving an asset
+
+```typescript
+import { Asset, AssetService } from 'nem2-asset-identifier';
+import { Account, NetworkType, PublicAccount, TransactionHttp, AccountHttp } from 'nem2-sdk';
+
+// Services and Repositories
+const assertService = new AssertService(new AccountHttp('http://localhost:3000'));
+
+// by source and identifier
+assertService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
+    .subscribe(asset => {
+        console.log('>>> Asset information');
+        console.log('Address\t', asset.address);
+    }, err => console.error('it is not a valid asset'));
+
+assertService.byAddress('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA')
+    .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
+
+assertService.byPublicKey('1485030412335ACAE6A59E8F5826AA7B7EAA831EAC73FE60E6A00E893A306F71')
+    .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
+```
+
 ## License
 
 Copyright (c) 2018 Aleix <aleix602@gmail.com> Licensed under the MIT License

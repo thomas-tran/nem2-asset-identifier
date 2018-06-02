@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 
-describe('health test', function () {
-    it('should be always true', function () {
+describe('health test', () => {
+    it('should be always true', () => {
         expect(true).to.be.equal(true);
     });
 });
