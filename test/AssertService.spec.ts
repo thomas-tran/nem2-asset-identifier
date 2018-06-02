@@ -4,15 +4,15 @@ import {
     AccountHttp,
     AccountInfo,
     Address,
+    AggregateTransaction,
     BlockchainHttp,
+    Deadline,
     NetworkType,
     PlainMessage,
     PublicAccount,
+    TransactionType,
     TransferTransaction,
     UInt64,
-    AggregateTransaction,
-    Deadline,
-    TransactionType,
 } from 'nem2-sdk';
 import Rx from 'rxjs/Rx';
 import * as TypeMoq from 'typemoq';
@@ -72,7 +72,7 @@ describe('AssertService', () => {
                     address,
                     [],
                     PlainMessage.create(
-                        'otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6'
+                        'otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
                     ),
                     network).toAggregate(owner),
             ],

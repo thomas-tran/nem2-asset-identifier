@@ -35,7 +35,6 @@ import { Asset, AssetService } from 'nem2-asset-identifier';
 import { Account, NetworkType, PublicAccount, TransactionHttp } from 'nem2-sdk';
 
 // Services and Repositories
-const assertService = new AssertService();
 const transactionHttp = new TransactionHttp('http://localhost:3000');
 
 // Replace with a private key
@@ -43,7 +42,7 @@ const privateKey = process.env.PRIVATE_KEY as string;
 const account = Account.createFromPrivateKey(privateKey, NetworkType.MIJIN_TEST);
 
 const asset = Asset.create(/* ... */); // Previous point
-const publishableAsset = assertService.publish(asset);
+const publishableAsset = AssetService.publish(asset);
 
 // Publishing
 transactionHttp
@@ -55,10 +54,14 @@ transactionHttp
 
 ```typescript
 import { Asset, AssetService } from 'nem2-asset-identifier';
-import { Account, NetworkType, PublicAccount, TransactionHttp, AccountHttp } from 'nem2-sdk';
+import { Account, NetworkType, PublicAccount, TransactionHttp, AccountHttp, BlockchainHttp } from 'nem2-sdk';
+
+// constants
+const node = 'http://localhost:3000';
+const network = NetworkType.MIJIN_TEST;
 
 // Services and Repositories
-const assertService = new AssertService(new AccountHttp('http://localhost:3000'));
+const assertService = new AssertService(new AccountHttp(node), new BlockchainHttp(node), network);
 
 // by source and identifier
 assertService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
