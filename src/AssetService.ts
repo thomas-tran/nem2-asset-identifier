@@ -23,11 +23,27 @@ export class AssetService {
             PlainMessage.create(`${asset.source},${asset.identifier}`),
             asset.networkType,
         );
+        const innerTransactions = [
+            assetDefinition.toAggregate(asset.owner),
+        ];
+
+        if (asset.metadata.length !== 0) {
+            const metadata = asset
+                .metadata
+                .map((metadataPair): string => `${metadataPair[0]},${metadataPair[1]}`);
+            innerTransactions.push(
+                TransferTransaction.create(
+                    deadline,
+                    asset.address,
+                    [],
+                    PlainMessage.create(`metadata:${metadata.join('.')}`),
+                    asset.networkType,
+                ).toAggregate(asset.owner),
+            );
+        }
         const transaction = AggregateTransaction.createComplete(
             deadline,
-            [
-                assetDefinition.toAggregate(asset.owner),
-            ],
+            innerTransactions,
             asset.networkType,
             [],
         );
@@ -64,14 +80,15 @@ export class AssetService {
             .map((txs) => {
                 const transactions = txs
                     .filter((tx) => tx.type === TransactionType.AGGREGATE_BONDED
-                                    || tx.type === TransactionType.AGGREGATE_COMPLETE)
+                        || tx.type === TransactionType.AGGREGATE_COMPLETE)
                     .map((tx) => tx as AggregateTransaction)
                     .filter((tx) => firstInnerTxTransferAndReceiver(tx, address));
                 if (transactions.length !== 1) {
                     throw new Error(`Account ${address.pretty()} is not an asset`);
                 }
                 const assetDefinitionTx = transactions[0];
-                const message = (assetDefinitionTx.innerTransactions[0] as TransferTransaction).message as PlainMessage;
+                const message = (assetDefinitionTx.innerTransactions.shift() as TransferTransaction)
+                    .message as PlainMessage;
                 const messageSource = message.payload.split(',')[0];
                 const messageIdentifier = message.payload.split(',')[1];
                 const publicKey = Asset.deterministicPublicKey(messageSource, messageIdentifier);
@@ -80,12 +97,20 @@ export class AssetService {
                     Rx.Observable.throw('Invalid asset');
                 }
 
+                const metadata: Array<[string, string | number | boolean]> =
+                    extractMetadata(assetDefinitionTx
+                        .innerTransactions
+                        .filter((x) => x.type === TransactionType.TRANSFER)
+                        .map((x) => x as TransferTransaction)
+                        .map((x) => x.message.payload));
+
                 return new Asset(
                     publicKey,
                     address,
                     assetDefinitionTx.signer!,
                     messageSource,
                     messageIdentifier,
+                    metadata,
                     this.networkType,
                 );
             });
@@ -97,4 +122,37 @@ const firstInnerTxTransferAndReceiver = (aggregateTx: AggregateTransaction, rece
         return false;
     }
     return (aggregateTx.innerTransactions[0] as TransferTransaction).recipient.equals(receiver);
+};
+
+export const extractMetadata = (payload: string[]): Array<[string, string | boolean | number]> => {
+    const partial: Array<Array<[string, string | boolean | number]>> = payload
+        .filter((mss: string) => mss.substring(0, 'metadata:'.length) === 'metadata:')
+        .map((mss) => mss.substring('metadata:'.length))
+        .map((mss) => mss.split('.'))
+        .map((rawMetadata: string[]) => {
+            const metadata: Array<[string, string | boolean | number]> = [];
+            rawMetadata.forEach((x) => {
+                const splitPair = x.split(',');
+                let value: string | boolean | number;
+                if (!isNaN(Number(splitPair[1]))) {
+                    value = Number(splitPair[1]);
+                } else if (parseBoolean(splitPair[1]) !== undefined) {
+                    value = parseBoolean(splitPair[1])!!;
+                } else {
+                    value = splitPair[1];
+                }
+                metadata.push([splitPair[0], value]);
+            });
+            return metadata;
+        });
+    return [].concat.apply([], partial);
+};
+
+const parseBoolean = (input: string): boolean | undefined => {
+    if (input.toLowerCase() === 'true') {
+        return true;
+    } else if (input.toLowerCase() === 'false') {
+        return false;
+    }
+    return undefined;
 };

@@ -13,10 +13,10 @@ export class Asset {
     public static create(owner: PublicAccount,
                          source: string,
                          identifier: string,
-                         networkType: NetworkType): Asset {
+                         metadata: Array<[string, string | number | boolean]>): Asset {
         const publicKey = Asset.deterministicPublicKey(source, identifier);
-        const address = Address.createFromPublicKey(publicKey, networkType);
-        return new Asset(publicKey, address, owner, source, identifier, networkType);
+        const address = Address.createFromPublicKey(publicKey, owner.address.networkType);
+        return new Asset(publicKey, address, owner, source, identifier, metadata, owner.address.networkType);
     }
 
     public static deterministicPublicKey(source: string, identifier: string): string {
@@ -28,6 +28,15 @@ export class Asset {
                 public readonly owner: PublicAccount,
                 public readonly source: string,
                 public readonly identifier: string,
+                public readonly metadata: Array<[string, string | number | boolean]>,
                 public readonly networkType: NetworkType) {
+    }
+
+    public getMetadata(key: string): string | number | boolean | undefined {
+        const metadata = this.metadata.filter((x) => x[0] === key);
+        if (metadata.length === 0) {
+            return undefined;
+        }
+        return metadata[0][1];
     }
 }

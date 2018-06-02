@@ -1,2 +1,2 @@
 export * from './src/Asset';
-export * from './src/AssetService';
+export { AssetService } from './src/AssetService';
