@@ -61,10 +61,10 @@ const node = 'http://localhost:3000';
 const network = NetworkType.MIJIN_TEST;
 
 // Services and Repositories
-const assertService = new AssertService(new AccountHttp(node), new BlockchainHttp(node), network);
+const assetService = new AssetService(new AccountHttp(node), new BlockchainHttp(node), network);
 
 // by source and identifier
-assertService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
+assetService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
     .subscribe(asset => {
         console.log('>>> Asset information');
         console.log('Address\t', asset.address);
