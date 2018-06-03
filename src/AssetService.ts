@@ -15,12 +15,14 @@ import Rx from 'rxjs/Rx';
 import { Asset } from '../index';
 
 export class AssetService {
+    public static readonly ASSET_PREFIX = 'asset(1):'; // (1) means version 1
+    public static readonly METADATA_PREFIX = 'metadata(1):';
     public static publish(asset: Asset, deadline: Deadline = Deadline.create()): AggregateTransaction {
         const assetDefinition = TransferTransaction.create(
             deadline,
             asset.address,
             [],
-            PlainMessage.create(`${asset.source},${asset.identifier}`),
+            PlainMessage.create(`${this.ASSET_PREFIX}${asset.source},${asset.identifier}`),
             asset.networkType,
         );
         const innerTransactions = [
@@ -36,7 +38,7 @@ export class AssetService {
                     deadline,
                     asset.address,
                     [],
-                    PlainMessage.create(`metadata:${metadata.join('.')}`),
+                    PlainMessage.create(`${this.METADATA_PREFIX}${metadata.join('.')}`),
                     asset.networkType,
                 ).toAggregate(asset.owner),
             );
@@ -89,8 +91,10 @@ export class AssetService {
                 const assetDefinitionTx = transactions[0];
                 const message = (assetDefinitionTx.innerTransactions.shift() as TransferTransaction)
                     .message as PlainMessage;
-                const messageSource = message.payload.split(',')[0];
-                const messageIdentifier = message.payload.split(',')[1];
+                if (message.payload.substring(0, AssetService.ASSET_PREFIX.length) !== AssetService.ASSET_PREFIX) {
+                    throw new Error(`First message in account is not an ${AssetService.ASSET_PREFIX} prefix`);
+                }
+                const [messageSource, messageIdentifier] = assetIdentifierDefinition(message.payload);
                 const publicKey = Asset.deterministicPublicKey(messageSource, messageIdentifier);
 
                 if (!Address.createFromPublicKey(publicKey, this.networkType).equals(address)) {
@@ -124,10 +128,16 @@ const firstInnerTxTransferAndReceiver = (aggregateTx: AggregateTransaction, rece
     return (aggregateTx.innerTransactions[0] as TransferTransaction).recipient.equals(receiver);
 };
 
+const assetIdentifierDefinition = (message: string) => {
+    const messageSource = message.split(',')[0].substring(AssetService.ASSET_PREFIX.length);
+    const messageIdentifier = message.split(',')[1];
+    return [messageSource, messageIdentifier];
+};
+
 export const extractMetadata = (payload: string[]): Array<[string, string | boolean | number]> => {
     const partial: Array<Array<[string, string | boolean | number]>> = payload
-        .filter((mss: string) => mss.substring(0, 'metadata:'.length) === 'metadata:')
-        .map((mss) => mss.substring('metadata:'.length))
+        .filter((mss: string) => mss.substring(0, AssetService.METADATA_PREFIX.length) === AssetService.METADATA_PREFIX)
+        .map((mss) => mss.substring(AssetService.METADATA_PREFIX.length))
         .map((mss) => mss.split('.'))
         .map((rawMetadata: string[]) => {
             const metadata: Array<[string, string | boolean | number]> = [];

@@ -46,9 +46,9 @@ describe('AssertService', () => {
         const assetDefinition = (transaction.innerTransactions[0] as TransferTransaction).message as PlainMessage;
         const metadata = (transaction.innerTransactions[1] as TransferTransaction).message as PlainMessage;
         expect(assetDefinition.payload)
-            .to.be.equal('otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6');
+            .to.be.equal('asset(1):otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6');
         expect(metadata.payload)
-            .to.be.equal('metadata:key,value');
+            .to.be.equal('metadata(1):key,value');
     });
 
     it('should return an asset', () => {
@@ -75,7 +75,7 @@ describe('AssertService', () => {
                     address,
                     [],
                     PlainMessage.create(
-                        'otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
+                        'asset(1):otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
                     ),
                     network).toAggregate(owner),
             ],
@@ -126,7 +126,7 @@ describe('AssertService', () => {
                     address,
                     [],
                     PlainMessage.create(
-                        'otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
+                        'asset(1):otherchain,26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
                     ),
                     network).toAggregate(owner),
                 TransferTransaction.create(
@@ -134,7 +134,7 @@ describe('AssertService', () => {
                     address,
                     [],
                     PlainMessage.create(
-                        'metadata:key,value',
+                        'metadata(1):key,value',
                     ),
                     network).toAggregate(owner),
             ],
