@@ -17,6 +17,7 @@
     "@types/mocha": "^5.2.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "ts-node": "^7.0.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.9.2"
@@ -24,7 +25,10 @@
   "scripts": {
     "pretest": "npm run build",
     "build": "rm -rf dist/ && tsc",
-    "test": "mocha --ui bdd --recursive ./dist/test"
+    "test": "mocha --ui bdd --recursive ./dist/test",
+    "test:cov-html": "nyc --reporter=html npm t", 
+    "test:cov": "nyc --reporter=lcov --reporter=text-lcov npm t && nyc report --reporter=text-lcov",
+    "test:coveralls": "npm run test:cov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -35,5 +39,10 @@
   "bugs": {
     "url": "https://github.com/aleixmorgadas/nem2-asset-identifier/issues"
   },
-  "homepage": "https://github.com/aleixmorgadas/nem2-asset-identifier#readme"
+  "homepage": "https://github.com/aleixmorgadas/nem2-asset-identifier#readme",
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js"
+    ]
+  }
 }

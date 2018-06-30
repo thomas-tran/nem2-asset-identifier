@@ -12,4 +12,9 @@ export interface AssetEvent {
      * or still has to be persisted
      */
     isPersisted(): boolean;
+
+    /**
+     * @returns an string with the event descriptor for later be read properly
+     */
+    toDTO(): string;
 }

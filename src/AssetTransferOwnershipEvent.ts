@@ -22,8 +22,7 @@ export class AssetTransferOwnershipEvent implements AssetEvent {
     public static isEvent(eventDescriptor: string): boolean {
         const descriptor = AssetTransferOwnershipEvent.descriptor();
         const descriptorLength = descriptor.length;
-        if (!(eventDescriptor.length !== descriptorLength + 40
-            || eventDescriptor.length !== descriptorLength + 46)) {
+        if (eventDescriptor.length !== descriptorLength + 64) {
             return false;
         }
         if (eventDescriptor.substr(0, descriptorLength).indexOf(descriptor) === -1) {
@@ -83,5 +82,9 @@ export class AssetTransferOwnershipEvent implements AssetEvent {
 
     public isPersisted(): boolean {
         return this.persisted;
+    }
+
+    public toDTO(): string {
+        return AssetTransferOwnershipEvent.descriptor() + this.newOwner.publicKey;
     }
 }
