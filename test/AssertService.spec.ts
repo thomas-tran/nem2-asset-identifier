@@ -13,7 +13,7 @@ import {
     TransferTransaction,
     UInt64,
 } from 'nem2-sdk';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import * as TypeMoq from 'typemoq';
 import { Asset, AssetService } from '../index';
 
@@ -85,9 +85,9 @@ describe('AssertService', () => {
             owner,
         );
 
-        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Observable.of(account));
+        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
-            () => Observable.of([aggregateTransaction]));
+            () => of([aggregateTransaction]));
         const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)
@@ -144,9 +144,9 @@ describe('AssertService', () => {
             owner,
         );
 
-        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Observable.of(account));
+        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
-            () => Observable.of([aggregateTransaction]));
+            () => of([aggregateTransaction]));
         const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)

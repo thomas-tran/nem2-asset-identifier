@@ -31,8 +31,7 @@ export class Asset {
             .forEach((key) => {
                 if (typeof metadata[key] === 'string'
                     && ((metadata[key] as string).indexOf(',') !== -1
-                        || (metadata[key] as string).indexOf('.') !== -1
-                        || (metadata[key] as string).indexOf(' ') !== -1)) {
+                        || (metadata[key] as string).indexOf('.') !== -1)) {
                     throw Error(`${key} contains special characters`);
                 }
             });

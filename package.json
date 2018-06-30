@@ -1,6 +1,6 @@
 {
   "name": "nem2-asset-identifier",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "experimental nem2 library to identify assets in nem2 blockchain",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "js-sha3": "^0.7.0",
-    "nem2-sdk": "^0.9.8",
+    "nem2-sdk": "^0.10.0",
     "rxjs": "^6.2.1"
   },
   "devDependencies": {

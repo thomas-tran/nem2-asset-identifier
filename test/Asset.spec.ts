@@ -41,7 +41,7 @@ describe('Asset', () => {
         expect(asset.getMetadata('key')).to.be.equal('value');
     });
 
-    ['value,', 'value.', ',', '.', ',.value', ' '].forEach((input) => {
+    ['value,', 'value.', ',', '.', ',.value'].forEach((input) => {
         it(`throw Error when the string contains invalid char input=${input}`, () => {
             expect(() => Asset.create(
                 owner,

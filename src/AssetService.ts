@@ -11,7 +11,8 @@ import {
     TransactionType,
     TransferTransaction,
 } from 'nem2-sdk';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { Asset } from '../index';
 
 export class AssetService {
@@ -76,13 +77,13 @@ export class AssetService {
     }
 
     public byAddress(address: Address): Observable<Asset> {
-        return Observable.of<Address>(address)
-            .flatMap<Address, AccountInfo>((addr: Address): Observable<AccountInfo> =>
-                this.accountRepository.getAccountInfo(addr))
-            .flatMap<AccountInfo, Transaction[]>((account: AccountInfo): Observable<Transaction[]> => {
-                return this.blockRepository.getBlockTransactions(account.addressHeight.compact());
-            })
-            .map((txs: Transaction[]) => {
+        return of<Address>(address).pipe(
+            mergeMap<Address, AccountInfo>((addr: Address): Observable<AccountInfo> =>
+                this.accountRepository.getAccountInfo(addr)),
+            mergeMap<AccountInfo, Transaction[]>((account: AccountInfo): Observable<Transaction[]> =>
+                this.blockRepository.getBlockTransactions(account.addressHeight.compact()),
+            ),
+            map((txs: Transaction[]) => {
                 const transactions = txs
                     .filter((tx) => tx.type === TransactionType.AGGREGATE_BONDED
                         || tx.type === TransactionType.AGGREGATE_COMPLETE)
@@ -120,7 +121,7 @@ export class AssetService {
                     metadata,
                     this.networkType,
                 );
-            });
+            }));
     }
 }
 
