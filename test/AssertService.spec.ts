@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import {
-    Account,
     AccountHttp,
     AccountInfo,
     Address,
@@ -14,7 +13,7 @@ import {
     TransferTransaction,
     UInt64,
 } from 'nem2-sdk';
-import Rx from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import * as TypeMoq from 'typemoq';
 import { Asset, AssetService } from '../index';
 
@@ -86,9 +85,9 @@ describe('AssertService', () => {
             owner,
         );
 
-        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Rx.Observable.of(account));
+        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Observable.of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
-            () => Rx.Observable.of([aggregateTransaction]));
+            () => Observable.of([aggregateTransaction]));
         const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)
@@ -145,9 +144,9 @@ describe('AssertService', () => {
             owner,
         );
 
-        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Rx.Observable.of(account));
+        accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => Observable.of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
-            () => Rx.Observable.of([aggregateTransaction]));
+            () => Observable.of([aggregateTransaction]));
         const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)

@@ -1,17 +1,17 @@
 import {
-    Account,
     AccountHttp,
+    AccountInfo,
     Address,
     AggregateTransaction,
     BlockchainHttp,
     Deadline,
     NetworkType,
     PlainMessage,
-    PublicAccount,
+    Transaction,
     TransactionType,
     TransferTransaction,
 } from 'nem2-sdk';
-import Rx from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Asset } from '../index';
 
 export class AssetService {
@@ -58,7 +58,7 @@ export class AssetService {
                 private readonly networkType: NetworkType) {
     }
 
-    public byAssetIdentifier(source: string, identifier: string): Rx.Observable<Asset> {
+    public byAssetIdentifier(source: string, identifier: string): Observable<Asset> {
         const publicKey = Asset.deterministicPublicKey(source, identifier);
         const address = Address.createFromPublicKey(
             publicKey,
@@ -67,7 +67,7 @@ export class AssetService {
         return this.byAddress(address);
     }
 
-    public byPublicKey(publicKey: string): Rx.Observable<Asset> {
+    public byPublicKey(publicKey: string): Observable<Asset> {
         const address = Address.createFromPublicKey(
             publicKey,
             this.networkType);
@@ -75,11 +75,14 @@ export class AssetService {
         return this.byAddress(address);
     }
 
-    public byAddress(address: Address): Rx.Observable<Asset> {
-        return Rx.Observable.of(address)
-            .flatMap((account) => this.accountRepository.getAccountInfo(address))
-            .flatMap((account) => this.blockRepository.getBlockTransactions(account.addressHeight.compact()))
-            .map((txs) => {
+    public byAddress(address: Address): Observable<Asset> {
+        return Observable.of<Address>(address)
+            .flatMap<Address, AccountInfo>((addr: Address): Observable<AccountInfo> =>
+                this.accountRepository.getAccountInfo(addr))
+            .flatMap<AccountInfo, Transaction[]>((account: AccountInfo): Observable<Transaction[]> => {
+                return this.blockRepository.getBlockTransactions(account.addressHeight.compact());
+            })
+            .map((txs: Transaction[]) => {
                 const transactions = txs
                     .filter((tx) => tx.type === TransactionType.AGGREGATE_BONDED
                         || tx.type === TransactionType.AGGREGATE_COMPLETE)
@@ -98,7 +101,7 @@ export class AssetService {
                 const publicKey = Asset.deterministicPublicKey(messageSource, messageIdentifier);
 
                 if (!Address.createFromPublicKey(publicKey, this.networkType).equals(address)) {
-                    Rx.Observable.throw('Invalid asset');
+                    Observable.throw('Invalid asset');
                 }
 
                 const metadata: {[key: string]: string | number | boolean } =
