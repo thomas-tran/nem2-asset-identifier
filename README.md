@@ -1,5 +1,11 @@
 # nem2-asset-identifier
 
+[![npm version](https://badge.fury.io/js/nem2-asset-identifier.svg)](https://badge.fury.io/js/asset-identifier)
+[![Build Status](https://api.travis-ci.org/aleixmorgadas/nem2-asset-identifier.svg?branch=master)](https://travis-ci.org/aleixmorgadas/nem2-asset-identifier)
+[![Coverage Status](https://coveralls.io/repos/github/aleixmorgadas/nem2-asset-identifier/badge.svg?branch=travis-ci)](https://coveralls.io/github/aleixmorgadas/nem2-asset-identifier?branch=travis-ci)
+![license](https://img.shields.io/github/license/mashape/apistatus.svg)
+
+
 :warning: experimental nem2 library to identify assets in nem2 blockchain. It will be submitted into [nemtech/NIP][nip] when it becomes more stable.
 
 ## Abstract
