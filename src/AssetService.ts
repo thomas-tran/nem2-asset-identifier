@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2018 Aleix <aleix602@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 import {
     AccountHttp,
     AccountInfo,
@@ -77,7 +97,7 @@ export class AssetService {
     }
 
     public byAddress(address: Address): Observable<Asset> {
-        return of<Address>(address).pipe(
+        return of(address).pipe(
             mergeMap<Address, AccountInfo>((addr: Address): Observable<AccountInfo> =>
                 this.accountRepository.getAccountInfo(addr)),
             mergeMap<AccountInfo, Transaction[]>((account: AccountInfo): Observable<Transaction[]> =>
@@ -126,7 +146,7 @@ export class AssetService {
 }
 
 const firstInnerTxTransferAndReceiver = (aggregateTx: AggregateTransaction, receiver: Address): boolean => {
-    if (!(aggregateTx.innerTransactions[0] instanceof TransferTransaction)) {
+    if (aggregateTx.innerTransactions[0].type !== TransactionType.TRANSFER) {
         return false;
     }
     return (aggregateTx.innerTransactions[0] as TransferTransaction).recipient.equals(receiver);
