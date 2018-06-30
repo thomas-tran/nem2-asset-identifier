@@ -139,6 +139,7 @@ export class AssetService {
                     messageSource,
                     messageIdentifier,
                     metadata,
+                    [],
                     this.networkType,
                 );
             }));

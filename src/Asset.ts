@@ -24,15 +24,17 @@ import {
     NetworkType,
     PublicAccount,
 } from 'nem2-sdk';
+import { AssetEvent } from './AssetEvent';
+import { AssetTransferOwnershipEvent } from './AssetTransferOwnershipEvent';
 
 export class Asset {
     public static create(owner: PublicAccount,
                          source: string,
                          identifier: string,
-                         metadata: {[key: string]: string | number | boolean}): Asset {
+                         metadata: { [key: string]: string | number | boolean }): Asset {
         const publicKey = Asset.deterministicPublicKey(source, identifier);
         const address = Address.createFromPublicKey(publicKey, owner.address.networkType);
-        return new Asset(publicKey, address, owner, source, identifier, metadata, owner.address.networkType);
+        return new Asset(publicKey, address, owner, source, identifier, metadata, [], owner.address.networkType);
     }
 
     public static deterministicPublicKey(source: string, identifier: string): string {
@@ -44,20 +46,25 @@ export class Asset {
                 public readonly owner: PublicAccount,
                 public readonly source: string,
                 public readonly identifier: string,
-                public readonly metadata: {[key: string]: string | number | boolean},
+                public readonly metadata: { [key: string]: string | number | boolean },
+                public readonly events: AssetEvent[],
                 public readonly networkType: NetworkType) {
-        const format = /[,]*/;
         Object.keys(metadata)
             .forEach((key) => {
                 if (typeof metadata[key] === 'string'
                     && ((metadata[key] as string).indexOf(',') !== -1
+                        || (metadata[key] as string).indexOf(':') !== -1
                         || (metadata[key] as string).indexOf('.') !== -1)) {
-                    throw Error(`${key} contains special characters`);
+                    throw Error(`${key} contains special characters (, or .)`);
                 }
             });
     }
 
     public getMetadata(key: string): string | number | boolean | undefined {
         return this.metadata[key];
+    }
+
+    public transferOwnership(newOwner: PublicAccount): Asset {
+        return AssetTransferOwnershipEvent.create(this, newOwner).apply();
     }
 }

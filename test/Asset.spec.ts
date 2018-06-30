@@ -61,7 +61,7 @@ describe('Asset', () => {
         expect(asset.getMetadata('key')).to.be.equal('value');
     });
 
-    ['value,', 'value.', ',', '.', ',.value'].forEach((input) => {
+    ['value,', 'value.', ',', '.', ',.value', ':'].forEach((input) => {
         it(`throw Error when the string contains invalid char input=${input}`, () => {
             expect(() => Asset.create(
                 owner,
@@ -72,5 +72,27 @@ describe('Asset', () => {
                 },
             )).to.throw(Error);
         });
+    });
+
+    it('should transfer the ownership', () => {
+        // Arrange
+        const newOwner = PublicAccount.createFromPublicKey(
+            '324E154A02A9037F61118A6C11D4CDD4B63A48545CDDC5E1F0C0A02E88154FA5',
+            NetworkType.MIJIN_TEST,
+        );
+        const asset = Asset.create(
+            owner,
+            'otherchain',
+            '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
+            {},
+        );
+
+        // Act
+        const newAsset = asset.transferOwnership(newOwner);
+
+        // Assert
+        expect(newAsset.owner).to.be.equal(newOwner);
+        expect(newAsset.events).to.have.length(1);
+        expect(newAsset.events[0].isPersisted()).to.be.false;
     });
 });
