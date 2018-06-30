@@ -24,9 +24,9 @@ const asset = Asset.create(
     owner,
     'otherchain',
     '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
-    [
-        ['metadata_key', 'metadata_value']
-    ],
+    {
+        'metadata_key': 'metadata_value',
+    },
 );
 
 console.log(asset.getMetadata('metadata_key'));

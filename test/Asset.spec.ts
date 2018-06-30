@@ -14,9 +14,9 @@ describe('Asset', () => {
             owner,
             'otherchain',
             '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
-            [
-                ['key', 'value'],
-            ],
+            {
+                key: 'value',
+            },
         );
 
         expect(asset.owner).to.be.equal(owner);
@@ -24,8 +24,8 @@ describe('Asset', () => {
         expect(asset.address.plain()).to.be.equal('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA');
         expect(asset.source).to.be.equal('otherchain');
         expect(asset.identifier).to.be.equal('26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6');
-        expect(asset.metadata.length).to.be.equal(1);
-        expect(asset.metadata[0]).to.be.deep.equal(['key', 'value']);
+        expect(Object.keys(asset.metadata).length).to.be.equal(1);
+        expect(asset.metadata).to.be.deep.equal({key: 'value'});
     });
 
     it('should return the metadata value', () => {
@@ -33,11 +33,24 @@ describe('Asset', () => {
             owner,
             'otherchain',
             '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
-            [
-                ['key', 'value'],
-            ],
+            {
+                key: 'value',
+            },
         );
 
         expect(asset.getMetadata('key')).to.be.equal('value');
+    });
+
+    ['value,', 'value.', ',', '.', ',.value', ' '].forEach((input) => {
+        it(`throw Error when the string contains invalid char input=${input}`, () => {
+            expect(() => Asset.create(
+                owner,
+                'otherchain',
+                '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
+                {
+                    key: input,
+                },
+            )).to.throw(Error);
+        });
     });
 });

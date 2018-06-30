@@ -17,6 +17,7 @@ import { Asset } from '../index';
 export class AssetService {
     public static readonly ASSET_PREFIX = 'asset(1):'; // (1) means version 1
     public static readonly METADATA_PREFIX = 'metadata(1):';
+
     public static publish(asset: Asset, deadline: Deadline = Deadline.create()): AggregateTransaction {
         const assetDefinition = TransferTransaction.create(
             deadline,
@@ -30,9 +31,8 @@ export class AssetService {
         ];
 
         if (asset.metadata.length !== 0) {
-            const metadata = asset
-                .metadata
-                .map((metadataPair): string => `${metadataPair[0]},${metadataPair[1]}`);
+            const metadata = Object.keys(asset.metadata)
+                .map((key): string => `${key},${asset.metadata[key]}`);
             innerTransactions.push(
                 TransferTransaction.create(
                     deadline,
@@ -101,7 +101,7 @@ export class AssetService {
                     Rx.Observable.throw('Invalid asset');
                 }
 
-                const metadata: Array<[string, string | number | boolean]> =
+                const metadata: {[key: string]: string | number | boolean } =
                     extractMetadata(assetDefinitionTx
                         .innerTransactions
                         .filter((x) => x.type === TransactionType.TRANSFER)
@@ -134,13 +134,13 @@ const assetIdentifierDefinition = (message: string) => {
     return [messageSource, messageIdentifier];
 };
 
-export const extractMetadata = (payload: string[]): Array<[string, string | boolean | number]> => {
-    const partial: Array<Array<[string, string | boolean | number]>> = payload
+export const extractMetadata = (payload: string[]): {[key: string]: string | boolean | number} => {
+    const partial: Array<{[key: string]: string | boolean | number}> = payload
         .filter((mss: string) => mss.substring(0, AssetService.METADATA_PREFIX.length) === AssetService.METADATA_PREFIX)
         .map((mss) => mss.substring(AssetService.METADATA_PREFIX.length))
         .map((mss) => mss.split('.'))
         .map((rawMetadata: string[]) => {
-            const metadata: Array<[string, string | boolean | number]> = [];
+            const innerMetadata: {[key: string]: string | boolean | number} = {};
             rawMetadata.forEach((x) => {
                 const splitPair = x.split(',');
                 let value: string | boolean | number;
@@ -151,11 +151,17 @@ export const extractMetadata = (payload: string[]): Array<[string, string | bool
                 } else {
                     value = splitPair[1];
                 }
-                metadata.push([splitPair[0], value]);
+                innerMetadata[splitPair[0]] = value;
             });
-            return metadata;
+            return innerMetadata;
         });
-    return [].concat.apply([], partial);
+    const metadata: {[key: string]: string | boolean | number} = {};
+    partial.forEach((notMerged) => {
+        Object.keys(notMerged).forEach((key) => {
+            metadata[key] = notMerged[key];
+        });
+    });
+    return metadata;
 };
 
 const parseBoolean = (input: string): boolean | undefined => {

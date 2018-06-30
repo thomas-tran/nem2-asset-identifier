@@ -29,7 +29,9 @@ describe('AssertService', () => {
         owner,
         'otherchain',
         '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6',
-        [['key', 'value']],
+        {
+            key: 'value',
+        },
     );
 
     // Mocks
@@ -98,7 +100,7 @@ describe('AssertService', () => {
                 expect(x.source).to.be.equal('otherchain');
                 expect(x.identifier)
                     .to.be.equal('26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6');
-                expect(x.metadata).to.be.deep.equal([]);
+                expect(x.metadata).to.be.deep.equal({});
             });
     });
 
@@ -157,7 +159,7 @@ describe('AssertService', () => {
                 expect(x.source).to.be.equal('otherchain');
                 expect(x.identifier)
                     .to.be.equal('26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6');
-                expect(x.metadata).to.be.deep.equal([['key', 'value']]);
+                expect(x.metadata).to.be.deep.equal({ key: 'value'});
             });
     });
 });

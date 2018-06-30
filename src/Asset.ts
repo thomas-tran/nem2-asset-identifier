@@ -1,19 +1,15 @@
 import { sha3_256 } from 'js-sha3';
 import {
     Address,
-    AggregateTransaction,
-    Deadline,
     NetworkType,
-    PlainMessage,
     PublicAccount,
-    TransferTransaction,
 } from 'nem2-sdk';
 
 export class Asset {
     public static create(owner: PublicAccount,
                          source: string,
                          identifier: string,
-                         metadata: Array<[string, string | number | boolean]>): Asset {
+                         metadata: {[key: string]: string | number | boolean}): Asset {
         const publicKey = Asset.deterministicPublicKey(source, identifier);
         const address = Address.createFromPublicKey(publicKey, owner.address.networkType);
         return new Asset(publicKey, address, owner, source, identifier, metadata, owner.address.networkType);
@@ -28,15 +24,21 @@ export class Asset {
                 public readonly owner: PublicAccount,
                 public readonly source: string,
                 public readonly identifier: string,
-                public readonly metadata: Array<[string, string | number | boolean]>,
+                public readonly metadata: {[key: string]: string | number | boolean},
                 public readonly networkType: NetworkType) {
+        const format = /[,]*/;
+        Object.keys(metadata)
+            .forEach((key) => {
+                if (typeof metadata[key] === 'string'
+                    && ((metadata[key] as string).indexOf(',') !== -1
+                        || (metadata[key] as string).indexOf('.') !== -1
+                        || (metadata[key] as string).indexOf(' ') !== -1)) {
+                    throw Error(`${key} contains special characters`);
+                }
+            });
     }
 
     public getMetadata(key: string): string | number | boolean | undefined {
-        const metadata = this.metadata.filter((x) => x[0] === key);
-        if (metadata.length === 0) {
-            return undefined;
-        }
-        return metadata[0][1];
+        return this.metadata[key];
     }
 }

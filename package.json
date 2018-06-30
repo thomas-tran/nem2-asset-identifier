@@ -1,6 +1,6 @@
 {
   "name": "nem2-asset-identifier",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "experimental nem2 library to identify assets in nem2 blockchain",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -17,7 +17,9 @@
     "@types/mocha": "^5.2.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
-    "typemoq": "^2.1.0"
+    "ts-node": "^7.0.0",
+    "typemoq": "^2.1.0",
+    "typescript": "^2.9.2"
   },
   "scripts": {
     "pretest": "npm run build",
