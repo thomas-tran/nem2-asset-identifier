@@ -24,8 +24,8 @@ import {
     NetworkType,
     PublicAccount,
 } from 'nem2-sdk';
-import { AssetEvent } from './AssetEvent';
-import { AssetTransferOwnershipEvent } from './AssetTransferOwnershipEvent';
+import { AssetCommand } from './AssetCommand';
+import { AssetTransferOwnershipCommand } from './AssetTransferOwnershipCommand';
 
 export class Asset {
     public static create(owner: PublicAccount,
@@ -47,7 +47,7 @@ export class Asset {
                 public readonly source: string,
                 public readonly identifier: string,
                 public readonly metadata: { [key: string]: string | number | boolean },
-                public readonly events: AssetEvent[],
+                public readonly commands: AssetCommand[],
                 public readonly networkType: NetworkType) {
         Object.keys(metadata)
             .forEach((key) => {
@@ -65,6 +65,6 @@ export class Asset {
     }
 
     public transferOwnership(newOwner: PublicAccount): Asset {
-        return AssetTransferOwnershipEvent.create(this, newOwner).apply();
+        return AssetTransferOwnershipCommand.create(this, newOwner).apply();
     }
 }

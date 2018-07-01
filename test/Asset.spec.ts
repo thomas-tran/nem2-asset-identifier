@@ -92,7 +92,7 @@ describe('Asset', () => {
 
         // Assert
         expect(newAsset.owner).to.be.equal(newOwner);
-        expect(newAsset.events).to.have.length(1);
-        expect(newAsset.events[0].isPersisted()).to.be.false;
+        expect(newAsset.commands).to.have.length(1);
+        expect(newAsset.commands[0].isPersisted()).to.be.false;
     });
 });
