@@ -80,10 +80,10 @@ assetService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed
         console.log('Address\t', asset.address);
     }, err => console.error('it is not a valid asset'));
 
-assertService.byAddress('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA')
+assetService.byAddress('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA')
     .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
 
-assertService.byPublicKey('1485030412335ACAE6A59E8F5826AA7B7EAA831EAC73FE60E6A00E893A306F71')
+assetService.byPublicKey('1485030412335ACAE6A59E8F5826AA7B7EAA831EAC73FE60E6A00E893A306F71')
     .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
 ```
 
