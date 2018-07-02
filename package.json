@@ -28,8 +28,8 @@
     "build": "rm -rf dist/ && tsc",
     "test": "mocha --ui bdd --recursive ./dist/test",
     "test:cov-html": "nyc --reporter=html npm t",
-    "test:converage": "nyc --reporter=text-lcov npm t",
-    "report-converage": "nyc report --reporter=text-lcov | coveralls"
+    "test:coverage": "nyc --reporter=text-lcov npm t",
+    "report-coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
