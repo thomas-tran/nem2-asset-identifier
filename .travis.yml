@@ -8,4 +8,7 @@ cache:
     - "node_modules"
 before_script:
   - npm run build
-script: npm run test:coveralls
+script: 
+  - npm run test:converage
+  - npm run report-converage
+
