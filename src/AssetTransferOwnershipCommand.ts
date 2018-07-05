@@ -21,10 +21,11 @@
 import { NetworkType, PublicAccount } from 'nem2-sdk';
 import { Asset } from './Asset';
 import { AssetCommand } from './AssetCommand';
+import { Evidence } from './Evidence';
 
-export class AssetTransferOwnershipCommand implements AssetCommand {
+export class AssetTransferOwnershipCommand extends AssetCommand {
     public static create(asset: Asset, newOwner: PublicAccount): AssetTransferOwnershipCommand {
-        return new AssetTransferOwnershipCommand(asset, newOwner, false);
+        return new AssetTransferOwnershipCommand(asset, newOwner, undefined);
     }
 
     /**
@@ -83,9 +84,17 @@ export class AssetTransferOwnershipCommand implements AssetCommand {
         );
     }
 
+    /**
+     * @internal
+     * @param asset
+     * @param newOwner
+     * @param evidence
+     */
     constructor(public readonly asset: Asset,
                 public readonly newOwner: PublicAccount,
-                public readonly persisted: boolean) { }
+                evidence?: Evidence) {
+        super(evidence);
+    }
 
     public apply(): Asset {
         return new Asset(
@@ -98,10 +107,6 @@ export class AssetTransferOwnershipCommand implements AssetCommand {
             this.asset.commands.concat(this),
             this.asset.networkType,
         );
-    }
-
-    public isPersisted(): boolean {
-        return this.persisted;
     }
 
     public toDTO(): string {

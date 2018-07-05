@@ -19,22 +19,38 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 import { Asset } from './Asset';
+import { Evidence } from './Evidence';
 
-export interface AssetCommand {
+export abstract class AssetCommand {
+
+    constructor(private readonly theEvidence?: Evidence) {}
+
     /**
      * Applies the specific logic to an asset and returns a new Asset with the logic applied and the event stored
      * @returns Asset Asset with the logic applied and stored the event
      */
-    apply(): Asset;
+    public abstract apply(): Asset;
 
     /**
      * @returns a boolean to know if an event applied to an asset has been read in the network
      * or still has to be persisted
      */
-    isPersisted(): boolean;
+    public isPersisted(): boolean {
+        return this.theEvidence !== undefined;
+    }
 
     /**
      * @returns an string with the event descriptor for later be read properly
      */
-    toDTO(): string;
+    public abstract toDTO(): string;
+
+    /**
+     * @returns the evidence in case it is persisted
+     */
+    public evidence(): Evidence {
+        if (this.theEvidence) {
+            return this.theEvidence;
+        }
+        throw new Error('evidence not present');
+    }
 }

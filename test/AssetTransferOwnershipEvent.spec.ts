@@ -48,6 +48,7 @@ describe('AssetTransferOwnershipCommand', () => {
         expect(newAsset.owner).to.be.equal(newOwner);
         expect(newAsset.commands).to.have.length(1);
         expect(newAsset.commands[0].isPersisted()).to.be.false;
+        expect(() => newAsset.commands[0].evidence()).to.throw('evidence not present');
     });
 
     it('should return the descriptor', () => {
