@@ -35,7 +35,7 @@ import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Asset } from '../index';
 
-export class AssetService {
+export class AssetRepository {
     public static readonly ASSET_PREFIX = 'asset(1):'; // (1) means version 1
     public static readonly METADATA_PREFIX = 'metadata(1):';
 
@@ -115,8 +115,8 @@ export class AssetService {
                 const assetDefinitionTx = transactions[0];
                 const message = (assetDefinitionTx.innerTransactions.shift() as TransferTransaction)
                     .message as PlainMessage;
-                if (message.payload.substring(0, AssetService.ASSET_PREFIX.length) !== AssetService.ASSET_PREFIX) {
-                    throw new Error(`First message in account is not an ${AssetService.ASSET_PREFIX} prefix`);
+                if (message.payload.substring(0, AssetRepository.ASSET_PREFIX.length) !== AssetRepository.ASSET_PREFIX) {
+                    throw new Error(`First message in account is not an ${AssetRepository.ASSET_PREFIX} prefix`);
                 }
                 const [messageSource, messageIdentifier] = assetIdentifierDefinition(message.payload);
                 const publicKey = Asset.deterministicPublicKey(messageSource, messageIdentifier);
@@ -154,15 +154,15 @@ const firstInnerTxTransferAndReceiver = (aggregateTx: AggregateTransaction, rece
 };
 
 const assetIdentifierDefinition = (message: string) => {
-    const messageSource = message.split(',')[0].substring(AssetService.ASSET_PREFIX.length);
+    const messageSource = message.split(',')[0].substring(AssetRepository.ASSET_PREFIX.length);
     const messageIdentifier = message.split(',')[1];
     return [messageSource, messageIdentifier];
 };
 
 export const extractMetadata = (payload: string[]): {[key: string]: string | boolean | number} => {
     const partial: Array<{[key: string]: string | boolean | number}> = payload
-        .filter((mss: string) => mss.substring(0, AssetService.METADATA_PREFIX.length) === AssetService.METADATA_PREFIX)
-        .map((mss) => mss.substring(AssetService.METADATA_PREFIX.length))
+        .filter((mss: string) => mss.substring(0, AssetRepository.METADATA_PREFIX.length) === AssetRepository.METADATA_PREFIX)
+        .map((mss) => mss.substring(AssetRepository.METADATA_PREFIX.length))
         .map((mss) => mss.split('.'))
         .map((rawMetadata: string[]) => {
             const innerMetadata: {[key: string]: string | boolean | number} = {};

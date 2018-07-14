@@ -33,9 +33,9 @@ import {
     TransferTransaction,
     UInt64,
 } from 'nem2-sdk';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import * as TypeMoq from 'typemoq';
-import { Asset, AssetService } from '../index';
+import { Asset, AssetRepository } from '../index';
 
 describe('AssertService', () => {
     // Constants
@@ -63,7 +63,7 @@ describe('AssertService', () => {
     });
 
     it('should publish an asset as AggregateTx', () => {
-        const transaction = AssetService.publish(asset);
+        const transaction = AssetRepository.publish(asset);
         const assetDefinition = (transaction.innerTransactions[0] as TransferTransaction).message as PlainMessage;
         const metadata = (transaction.innerTransactions[1] as TransferTransaction).message as PlainMessage;
         expect(assetDefinition.payload)
@@ -108,7 +108,7 @@ describe('AssertService', () => {
         accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
             () => of([aggregateTransaction]));
-        const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
+        const assetService = new AssetRepository(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)
             .toPromise()
@@ -167,7 +167,7 @@ describe('AssertService', () => {
         accountHttpMock.setup((x) => x.getAccountInfo(address)).returns(() => of(account));
         blockchainHttpMock.setup((x) => x.getBlockTransactions(10)).returns(
             () => of([aggregateTransaction]));
-        const assetService = new AssetService(accountHttpMock.object, blockchainHttpMock.object, network);
+        const assetService = new AssetRepository(accountHttpMock.object, blockchainHttpMock.object, network);
 
         return assetService.byAddress(address)
             .toPromise()
