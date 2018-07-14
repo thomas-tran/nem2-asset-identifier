@@ -41,10 +41,10 @@ console.log(asset.getMetadata('metadata_key'));
 ### Publishing an asset
 
 ```typescript
-import { Asset, AssetService } from 'nem2-asset-identifier';
+import { Asset, AssetRepository } from 'nem2-asset-identifier';
 import { Account, NetworkType, PublicAccount, TransactionHttp } from 'nem2-sdk';
 
-// Services and Repositories
+// Repositories
 const transactionHttp = new TransactionHttp('http://localhost:3000');
 
 // Replace with a private key
@@ -52,7 +52,7 @@ const privateKey = process.env.PRIVATE_KEY as string;
 const account = Account.createFromPrivateKey(privateKey, NetworkType.MIJIN_TEST);
 
 const asset = Asset.create(/* ... */); // Previous point
-const publishableAsset = AssetService.publish(asset);
+const publishableAsset = AssetRepository.publish(asset);
 
 // Publishing
 transactionHttp
@@ -63,27 +63,27 @@ transactionHttp
 ### Receiving an asset
 
 ```typescript
-import { Asset, AssetService } from 'nem2-asset-identifier';
+import { Asset, AssetRepository } from 'nem2-asset-identifier';
 import { Account, NetworkType, PublicAccount, TransactionHttp, AccountHttp, BlockchainHttp } from 'nem2-sdk';
 
 // constants
 const node = 'http://localhost:3000';
 const network = NetworkType.MIJIN_TEST;
 
-// Services and Repositories
-const assetService = new AssetService(new AccountHttp(node), new BlockchainHttp(node), network);
+// Repositories
+const assetRepository = new AssetRepository(new AccountHttp(node), new BlockchainHttp(node), network);
 
 // by source and identifier
-assetService.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
+assetRepository.byAssetIdentifier('otherchain', '26198278f6e862fd82d26c7388a9ed19ed16282c2a4d562463b8b4336929c5d6')
     .subscribe(asset => {
         console.log('>>> Asset information');
         console.log('Address\t', asset.address);
     }, err => console.error('it is not a valid asset'));
 
-assetService.byAddress('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA')
+assetRepository.byAddress('SAG3VKH4XRCVYTMDMHUN62AH353TJC74BFDKKNOA')
     .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
 
-assetService.byPublicKey('1485030412335ACAE6A59E8F5826AA7B7EAA831EAC73FE60E6A00E893A306F71')
+assetRepository.byPublicKey('1485030412335ACAE6A59E8F5826AA7B7EAA831EAC73FE60E6A00E893A306F71')
     .subscribe(asset => { /** ... */ }, err => console.error('it is not a valid asset'));
 ```
 
