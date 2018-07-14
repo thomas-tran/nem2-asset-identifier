@@ -21,7 +21,7 @@
 import { expect } from 'chai';
 import { NetworkType, PublicAccount } from 'nem2-sdk';
 import { Asset } from '../index';
-import { AssetTransferOwnershipCommand } from '../src/AssetTransferOwnershipCommand';
+import { AssetTransferOwnershipCommand } from '../index';
 
 describe('AssetTransferOwnershipCommand', () => {
     const network = NetworkType.MIJIN_TEST;

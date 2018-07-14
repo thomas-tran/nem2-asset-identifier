@@ -33,7 +33,7 @@ import {
 } from 'nem2-sdk';
 import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { Asset } from '../index';
+import { Asset } from './Asset';
 
 export class AssetRepository {
     public static readonly ASSET_PREFIX = 'asset(1):'; // (1) means version 1

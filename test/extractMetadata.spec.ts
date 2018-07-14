@@ -19,7 +19,7 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 import { expect } from 'chai';
-import { extractMetadata } from '../src/AssetService';
+import { extractMetadata } from '../src/AssetRepository';
 
 describe('extractMetadata', () => {
     it('should extract a metadata pair', () => {

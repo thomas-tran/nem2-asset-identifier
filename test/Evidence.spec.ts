@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Evidence } from '../src/Evidence';
+import { Evidence } from '../index';
 
 describe('Evidence', () => {
     it('should contain the block and the transaction hash', () => {
